@@ -1,5 +1,10 @@
-
-import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useRef,
+  useEffect,
+} from "react";
 
 interface AudioTrack {
   id: string;
@@ -31,43 +36,45 @@ const AudioContext = createContext<AudioContextType | undefined>(undefined);
 // Real focus and ambient music URLs (using freely available sources)
 const DEFAULT_PLAYLIST: AudioTrack[] = [
   {
-    id: '1',
-    title: 'Rain Sounds',
-    artist: 'Nature Sounds',
-    url: 'https://www.soundjay.com/misc/sounds/rain-01.mp3',
-    category: 'Nature'
+    id: "1",
+    title: "Rain Sounds",
+    artist: "Nature Sounds",
+    url: "/sounds/elegant-background_outro-1.mp3", // Replace with a valid URL or local file path
+    category: "Nature",
   },
   {
-    id: '2',
-    title: 'Forest Ambience',
-    artist: 'Nature Sounds',
-    url: 'https://www.soundjay.com/misc/sounds/forest-01.mp3',
-    category: 'Nature'
+    id: "2",
+    title: "Forest Ambience",
+    artist: "Nature Sounds",
+    url: "/sounds/morning-in-the-forest.mp3", // Replace with a valid URL or local file path
+    category: "Nature",
   },
   {
-    id: '3',
-    title: 'Ocean Waves',
-    artist: 'Nature Sounds',
-    url: 'https://www.soundjay.com/misc/sounds/ocean-01.mp3',
-    category: 'Nature'
+    id: "3",
+    title: "Ocean Waves",
+    artist: "Nature Sounds",
+    url: "/sounds/morning-in-the-forest.mp3",
+    category: "Nature",
   },
   {
-    id: '4',
-    title: 'Peaceful Piano',
-    artist: 'Ambient Focus',
-    url: 'https://www.soundjay.com/misc/sounds/piano-01.mp3',
-    category: 'Piano'
+    id: "4",
+    title: "Peaceful Piano",
+    artist: "Ambient Focus",
+    url: "/sounds/morning-in-the-forest.mp3",
+    category: "Piano",
   },
   {
-    id: '5',
-    title: 'Focus Flow',
-    artist: 'Ambient Focus',
-    url: 'https://www.soundjay.com/misc/sounds/ambient-01.mp3',
-    category: 'Ambient'
-  }
+    id: "5",
+    title: "Focus Flow",
+    artist: "Ambient Focus",
+    url: "/sounds/morning-in-the-forest.mp3",
+    category: "Ambient",
+  },
 ];
 
-export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [currentTrack, setCurrentTrack] = useState<AudioTrack | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolumeState] = useState(50);
@@ -102,7 +109,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       const handleError = () => {
         setIsLoading(false);
-        setError('Không thể tải nhạc này');
+        setError("Không thể tải nhạc này");
         setIsPlaying(false);
       };
 
@@ -111,20 +118,20 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setError(null);
       };
 
-      audio.addEventListener('loadedmetadata', handleLoadedMetadata);
-      audio.addEventListener('timeupdate', handleTimeUpdate);
-      audio.addEventListener('ended', handleEnded);
-      audio.addEventListener('loadstart', handleLoadStart);
-      audio.addEventListener('error', handleError);
-      audio.addEventListener('canplay', handleCanPlay);
+      audio.addEventListener("loadedmetadata", handleLoadedMetadata);
+      audio.addEventListener("timeupdate", handleTimeUpdate);
+      audio.addEventListener("ended", handleEnded);
+      audio.addEventListener("loadstart", handleLoadStart);
+      audio.addEventListener("error", handleError);
+      audio.addEventListener("canplay", handleCanPlay);
 
       return () => {
-        audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
-        audio.removeEventListener('timeupdate', handleTimeUpdate);
-        audio.removeEventListener('ended', handleEnded);
-        audio.removeEventListener('loadstart', handleLoadStart);
-        audio.removeEventListener('error', handleError);
-        audio.removeEventListener('canplay', handleCanPlay);
+        audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
+        audio.removeEventListener("timeupdate", handleTimeUpdate);
+        audio.removeEventListener("ended", handleEnded);
+        audio.removeEventListener("loadstart", handleLoadStart);
+        audio.removeEventListener("error", handleError);
+        audio.removeEventListener("canplay", handleCanPlay);
       };
     }
   }, [currentTrack]);
@@ -147,15 +154,15 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     audioRef.current = new Audio();
     audioRef.current.volume = volume / 100;
     audioRef.current.crossOrigin = "anonymous";
-    
+
     try {
       audioRef.current.src = track.url;
       await audioRef.current.load();
       await audioRef.current.play();
       setIsPlaying(true);
     } catch (err) {
-      console.error('Error playing track:', err);
-      setError('Không thể phát nhạc này');
+      console.error("Error playing track:", err);
+      setError("Không thể phát nhạc này");
       setIsPlaying(false);
       setIsLoading(false);
     }
@@ -173,8 +180,8 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setIsPlaying(true);
       }
     } catch (err) {
-      console.error('Error toggling play:', err);
-      setError('Không thể phát nhạc');
+      console.error("Error toggling play:", err);
+      setError("Không thể phát nhạc");
       setIsPlaying(false);
     }
   };
@@ -185,14 +192,18 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const nextTrack = () => {
     if (!currentTrack) return;
-    const currentIndex = playlist.findIndex(track => track.id === currentTrack.id);
+    const currentIndex = playlist.findIndex(
+      (track) => track.id === currentTrack.id
+    );
     const nextIndex = (currentIndex + 1) % playlist.length;
     playTrack(playlist[nextIndex]);
   };
 
   const prevTrack = () => {
     if (!currentTrack) return;
-    const currentIndex = playlist.findIndex(track => track.id === currentTrack.id);
+    const currentIndex = playlist.findIndex(
+      (track) => track.id === currentTrack.id
+    );
     const prevIndex = (currentIndex - 1 + playlist.length) % playlist.length;
     playTrack(playlist[prevIndex]);
   };
@@ -204,22 +215,24 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <AudioContext.Provider value={{
-      currentTrack,
-      isPlaying,
-      volume,
-      currentTime,
-      duration,
-      playlist,
-      playTrack,
-      togglePlay,
-      setVolume,
-      nextTrack,
-      prevTrack,
-      setCurrentTime,
-      isLoading,
-      error
-    }}>
+    <AudioContext.Provider
+      value={{
+        currentTrack,
+        isPlaying,
+        volume,
+        currentTime,
+        duration,
+        playlist,
+        playTrack,
+        togglePlay,
+        setVolume,
+        nextTrack,
+        prevTrack,
+        setCurrentTime,
+        isLoading,
+        error,
+      }}
+    >
       {children}
     </AudioContext.Provider>
   );
@@ -228,7 +241,7 @@ export const AudioProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useAudio = () => {
   const context = useContext(AudioContext);
   if (context === undefined) {
-    throw new Error('useAudio must be used within an AudioProvider');
+    throw new Error("useAudio must be used within an AudioProvider");
   }
   return context;
 };
