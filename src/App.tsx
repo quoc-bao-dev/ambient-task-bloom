@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AudioProvider } from "@/contexts/AudioContext";
 import Index from "./pages/Index";
 import WorkHistoryDetail from "./pages/WorkHistoryDetail";
+import UserGuideDetail from "./pages/UserGuideDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/work-history" element={<WorkHistoryDetail />} />
+            <Route path="/user-guide" element={<UserGuideDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

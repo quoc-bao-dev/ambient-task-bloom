@@ -6,6 +6,8 @@ import PomodoroTimer from '@/components/PomodoroTimer';
 import MusicPlayer from '@/components/MusicPlayer';
 import WorkHistory from '@/components/WorkHistory';
 import MotivationalQuotes from '@/components/MotivationalQuotes';
+import ScheduleTimer from '@/components/ScheduleTimer';
+import UserGuide from '@/components/UserGuide';
 import { Focus, Settings } from 'lucide-react';
 
 const Index = () => {
@@ -60,12 +62,15 @@ const Index = () => {
             <h1 className={`text-4xl font-light tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               FocusFlow Pro
             </h1>
-            <button 
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`p-3 rounded-full transition-all duration-300 ${neumorphicButton}`}
-            >
-              <Settings className={`h-5 w-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
-            </button>
+            <div className="flex items-center gap-2">
+              <UserGuide isDarkMode={isDarkMode} />
+              <button 
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className={`p-3 rounded-full transition-all duration-300 ${neumorphicButton}`}
+              >
+                <Settings className={`h-5 w-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
+              </button>
+            </div>
           </div>
           <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-light mb-2`}>
             Nâng cao hiệu quả làm việc với phương pháp khoa học
@@ -103,6 +108,13 @@ const Index = () => {
               isDarkMode ? 'text-white' : 'text-slate-800'
             }`}>
               <PomodoroTimer isDarkMode={isDarkMode} />
+            </div>
+
+            {/* Schedule Timer */}
+            <div className={`p-6 rounded-3xl border-0 ${neumorphicCard} ${
+              isDarkMode ? 'text-white' : 'text-slate-800'
+            }`}>
+              <ScheduleTimer isDarkMode={isDarkMode} />
             </div>
 
             {/* Music Player */}
