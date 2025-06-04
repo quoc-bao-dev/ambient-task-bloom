@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
-import { Play, Pause, SkipForward, SkipBack, Volume2, Music } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Volume2, Music, Loader2, AlertCircle } from 'lucide-react';
 import { useAudio } from '@/contexts/AudioContext';
 
 interface MusicPlayerProps {
@@ -21,7 +21,10 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
     togglePlay,
     setVolume,
     nextTrack,
-    prevTrack
+    prevTrack,
+    setCurrentTime,
+    isLoading,
+    error
   } = useAudio();
 
   const neumorphicButton = `${
@@ -37,6 +40,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
   }`;
 
   const formatTime = (seconds: number) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
@@ -44,6 +48,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
 
   const handleVolumeChange = (value: number[]) => {
     setVolume(value[0]);
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!duration) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const newTime = (clickX / rect.width) * duration;
+    setCurrentTime(newTime);
   };
 
   const getTrackIcon = (category: string) => {
@@ -69,8 +81,14 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
       {/* Current Track Display */}
       {currentTrack ? (
         <div className="text-center space-y-4">
-          <div className={`w-24 h-24 mx-auto rounded-full ${neumorphicCard} flex items-center justify-center text-2xl`}>
-            {getTrackIcon(currentTrack.category)}
+          <div className={`w-24 h-24 mx-auto rounded-full ${neumorphicCard} flex items-center justify-center text-2xl relative`}>
+            {isLoading ? (
+              <Loader2 className="h-8 w-8 animate-spin" />
+            ) : error ? (
+              <AlertCircle className="h-8 w-8 text-red-500" />
+            ) : (
+              getTrackIcon(currentTrack.category)
+            )}
           </div>
           
           <div>
@@ -78,11 +96,17 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
             <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
               {currentTrack.artist}
             </p>
+            {error && (
+              <p className="text-xs text-red-500 mt-1">{error}</p>
+            )}
           </div>
 
           {/* Progress Bar */}
           <div className="space-y-2">
-            <div className={`w-full h-2 rounded-full ${neumorphicCard}`}>
+            <div 
+              className={`w-full h-2 rounded-full cursor-pointer ${neumorphicCard}`}
+              onClick={handleProgressClick}
+            >
               <div 
                 className="h-2 bg-gradient-to-r from-green-400 to-blue-500 rounded-full transition-all duration-300"
                 style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
@@ -110,7 +134,7 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
         <button
           onClick={prevTrack}
           className={`p-3 rounded-full transition-all duration-300 ${neumorphicButton}`}
-          disabled={!currentTrack}
+          disabled={!currentTrack || isLoading}
         >
           <SkipBack className="h-4 w-4" />
         </button>
@@ -118,15 +142,21 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
         <button
           onClick={togglePlay}
           className={`p-4 rounded-full transition-all duration-300 ${neumorphicButton}`}
-          disabled={!currentTrack}
+          disabled={!currentTrack || isLoading}
         >
-          {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+          {isLoading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : isPlaying ? (
+            <Pause className="h-5 w-5" />
+          ) : (
+            <Play className="h-5 w-5" />
+          )}
         </button>
         
         <button
           onClick={nextTrack}
           className={`p-3 rounded-full transition-all duration-300 ${neumorphicButton}`}
-          disabled={!currentTrack}
+          disabled={!currentTrack || isLoading}
         >
           <SkipForward className="h-4 w-4" />
         </button>
@@ -159,12 +189,13 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ isDarkMode }) => {
             <button
               key={track.id}
               onClick={() => playTrack(track)}
+              disabled={isLoading}
               className={`w-full text-left p-2 rounded-lg text-xs transition-all duration-300 ${
                 currentTrack?.id === track.id
                   ? isDarkMode 
                     ? 'bg-blue-900/30 text-blue-400' 
                     : 'bg-blue-100 text-blue-700'
-                  : `${neumorphicButton}`
+                  : `${neumorphicButton} ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`
               }`}
             >
               <div className="flex items-center gap-2">
