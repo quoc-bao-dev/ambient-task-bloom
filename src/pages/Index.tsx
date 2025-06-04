@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import TaskManager from '@/components/TaskManager';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import MusicPlayer from '@/components/MusicPlayer';
-import { Leaf, Sun, Moon } from 'lucide-react';
+import { Focus, Settings } from 'lucide-react';
 
 const Index = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -30,76 +30,77 @@ const Index = () => {
     });
   };
 
-  return (
-    <div className={`min-h-screen transition-all duration-1000 ${
-      isDarkMode 
-        ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-green-900' 
-        : 'bg-gradient-to-br from-sky-100 via-green-50 to-blue-100'
-    }`}>
-      {/* Animated background elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-green-200/20 rounded-full animate-pulse"></div>
-        <div className="absolute top-32 right-20 w-24 h-24 bg-blue-200/20 rounded-full animate-bounce" style={{animationDuration: '3s'}}></div>
-        <div className="absolute bottom-20 left-1/4 w-40 h-40 bg-green-300/10 rounded-full animate-pulse" style={{animationDelay: '1s'}}></div>
-      </div>
+  const neumorphicCard = `${
+    isDarkMode 
+      ? 'bg-slate-800 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5),inset_-2px_-2px_5px_rgba(255,255,255,0.1)]' 
+      : 'bg-gray-100 shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset_-2px_-2px_5px_rgba(255,255,255,0.9)]'
+  }`;
 
-      <div className="relative z-10 container mx-auto px-4 py-8">
+  const neumorphicButton = `${
+    isDarkMode 
+      ? 'bg-slate-800 shadow-[2px_2px_5px_rgba(0,0,0,0.5),-2px_-2px_5px_rgba(255,255,255,0.1)] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5),inset_-2px_-2px_5px_rgba(255,255,255,0.1)]' 
+      : 'bg-gray-100 shadow-[2px_2px_5px_rgba(0,0,0,0.1),-2px_-2px_5px_rgba(255,255,255,0.9)] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset_-2px_-2px_5px_rgba(255,255,255,0.9)]'
+  }`;
+
+  return (
+    <div className={`min-h-screen transition-all duration-500 ${
+      isDarkMode 
+        ? 'bg-slate-900' 
+        : 'bg-gray-100'
+    }`}>
+      <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <header className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Leaf className={`h-8 w-8 ${isDarkMode ? 'text-green-400' : 'text-green-600'} animate-pulse`} />
-            <h1 className={`text-4xl font-light ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
-              Thiên Nhiên Focus
+            <div className={`p-3 rounded-full ${neumorphicCard}`}>
+              <Focus className={`h-8 w-8 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+            </div>
+            <h1 className={`text-4xl font-light tracking-wide ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+              FocusFlow Pro
             </h1>
             <button 
               onClick={() => setIsDarkMode(!isDarkMode)}
-              className={`p-2 rounded-full transition-colors ${
-                isDarkMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-600'
-              }`}
+              className={`p-3 rounded-full transition-all duration-300 ${neumorphicButton}`}
             >
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              <Settings className={`h-5 w-5 ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`} />
             </button>
           </div>
-          <p className={`text-lg ${isDarkMode ? 'text-green-200' : 'text-green-700'} font-light`}>
-            Làm việc hiệu quả trong không gian yên bình
+          <p className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} font-light mb-2`}>
+            Nâng cao hiệu quả làm việc với phương pháp khoa học
           </p>
-          <p className={`text-2xl font-mono mt-2 ${isDarkMode ? 'text-blue-200' : 'text-blue-600'}`}>
-            {formatTime(currentTime)}
-          </p>
+          <div className={`inline-block px-6 py-2 rounded-full ${neumorphicCard}`}>
+            <p className={`text-xl font-mono ${isDarkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+              {formatTime(currentTime)}
+            </p>
+          </div>
         </header>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Task Manager */}
           <div className="lg:col-span-2">
-            <Card className={`p-6 backdrop-blur-sm border-0 shadow-lg ${
-              isDarkMode 
-                ? 'bg-slate-800/50 text-white' 
-                : 'bg-white/70 text-slate-800'
+            <div className={`p-6 rounded-3xl border-0 ${neumorphicCard} ${
+              isDarkMode ? 'text-white' : 'text-slate-800'
             }`}>
               <TaskManager isDarkMode={isDarkMode} />
-            </Card>
+            </div>
           </div>
 
           {/* Right Sidebar */}
           <div className="space-y-6">
             {/* Pomodoro Timer */}
-            <Card className={`p-6 backdrop-blur-sm border-0 shadow-lg ${
-              isDarkMode 
-                ? 'bg-slate-800/50 text-white' 
-                : 'bg-white/70 text-slate-800'
+            <div className={`p-6 rounded-3xl border-0 ${neumorphicCard} ${
+              isDarkMode ? 'text-white' : 'text-slate-800'
             }`}>
               <PomodoroTimer isDarkMode={isDarkMode} />
-            </Card>
+            </div>
 
             {/* Music Player */}
-            <Card className={`p-6 backdrop-blur-sm border-0 shadow-lg ${
-              isDarkMode 
-                ? 'bg-slate-800/50 text-white' 
-                : 'bg-white/70 text-slate-800'
+            <div className={`p-6 rounded-3xl border-0 ${neumorphicCard} ${
+              isDarkMode ? 'text-white' : 'text-slate-800'
             }`}>
               <MusicPlayer isDarkMode={isDarkMode} />
-            </Card>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
@@ -19,6 +18,18 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isDarkMode }) => {
   const workDuration = 25 * 60; // 25 minutes
   const breakDuration = 5 * 60; // 5 minutes
   const longBreakDuration = 15 * 60; // 15 minutes
+
+  const neumorphicButton = `${
+    isDarkMode 
+      ? 'bg-slate-800 shadow-[2px_2px_5px_rgba(0,0,0,0.5),-2px_-2px_5px_rgba(255,255,255,0.1)] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5),inset_-2px_-2px_5px_rgba(255,255,255,0.1)]' 
+      : 'bg-gray-100 shadow-[2px_2px_5px_rgba(0,0,0,0.1),-2px_-2px_5px_rgba(255,255,255,0.9)] hover:shadow-[inset_2px_2px_5px_rgba(0,0,0,0.1),inset_-2px_-2px_5px_rgba(255,255,255,0.9)]'
+  }`;
+
+  const neumorphicCircle = `${
+    isDarkMode 
+      ? 'bg-slate-800 shadow-[inset_8px_8px_15px_rgba(0,0,0,0.5),inset_-8px_-8px_15px_rgba(255,255,255,0.1)]' 
+      : 'bg-gray-100 shadow-[inset_8px_8px_15px_rgba(0,0,0,0.1),inset_-8px_-8px_15px_rgba(255,255,255,0.9)]'
+  }`;
 
   useEffect(() => {
     if (isActive && timeLeft > 0) {
@@ -97,39 +108,33 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isDarkMode }) => {
     <div className="space-y-6 text-center">
       <div className="flex items-center justify-center gap-2 mb-4">
         <Timer className={`h-6 w-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-        <h3 className="text-xl font-light">Pomodoro Timer</h3>
+        <h3 className="text-xl font-light">Pomodoro Focus</h3>
       </div>
 
       {/* Timer Display */}
       <div className="relative">
-        <div className={`w-48 h-48 mx-auto rounded-full border-8 ${
-          isBreak 
-            ? isDarkMode ? 'border-green-400/30' : 'border-green-500/30'
-            : isDarkMode ? 'border-blue-400/30' : 'border-blue-500/30'
-        } flex items-center justify-center relative overflow-hidden`}>
+        <div className={`w-48 h-48 mx-auto rounded-full ${neumorphicCircle} flex items-center justify-center relative overflow-hidden`}>
           {/* Progress Circle */}
           <div 
-            className={`absolute inset-0 rounded-full ${
-              isBreak 
-                ? 'bg-gradient-to-br from-green-400/20 to-green-600/20'
-                : 'bg-gradient-to-br from-blue-400/20 to-blue-600/20'
-            }`}
+            className="absolute inset-4 rounded-full"
             style={{
               background: `conic-gradient(${
                 isBreak 
-                  ? isDarkMode ? '#34d399' : '#10b981'
-                  : isDarkMode ? '#60a5fa' : '#3b82f6'
+                  ? isDarkMode ? '#10b981' : '#059669'
+                  : isDarkMode ? '#3b82f6' : '#2563eb'
               } ${progress * 3.6}deg, transparent 0deg)`
             }}
           ></div>
           
-          {/* Timer Text */}
-          <div className="relative z-10 text-center">
-            <div className="text-4xl font-mono font-bold mb-2">
-              {formatTime(timeLeft)}
-            </div>
-            <div className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-600'}`}>
-              {isBreak ? '🌸 Nghỉ ngơi' : '💼 Làm việc'}
+          {/* Inner Circle */}
+          <div className={`w-32 h-32 rounded-full ${neumorphicCircle} flex items-center justify-center`}>
+            <div className="text-center">
+              <div className="text-3xl font-mono font-bold mb-1">
+                {formatTime(timeLeft)}
+              </div>
+              <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                {isBreak ? 'Nghỉ ngơi' : 'Tập trung'}
+              </div>
             </div>
           </div>
         </div>
@@ -138,47 +143,30 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isDarkMode }) => {
       {/* Status */}
       <div className="space-y-2">
         <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-          Chu kỳ: {cycle} • {isBreak ? 'Đang nghỉ' : 'Đang làm việc'}
+          Chu kỳ {cycle} • {isBreak ? 'Đang nghỉ' : 'Đang làm việc'}
         </p>
-        <div className={`text-xs px-3 py-1 rounded-full inline-block ${
-          isActive 
-            ? isBreak 
-              ? 'bg-green-500/20 text-green-400'
-              : 'bg-blue-500/20 text-blue-400'
-            : isDarkMode ? 'bg-slate-700 text-slate-400' : 'bg-gray-200 text-gray-600'
-        }`}>
-          {isActive ? (isBreak ? 'Đang nghỉ ngơi...' : 'Đang tập trung...') : 'Tạm dừng'}
-        </div>
       </div>
 
       {/* Controls */}
-      <div className="flex justify-center gap-3">
-        <Button
+      <div className="flex justify-center gap-4">
+        <button
           onClick={toggleTimer}
-          className={`${
-            isActive 
-              ? 'bg-red-500 hover:bg-red-600' 
-              : isBreak 
-                ? 'bg-green-500 hover:bg-green-600'
-                : 'bg-blue-500 hover:bg-blue-600'
-          } text-white`}
+          className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all duration-300 ${neumorphicButton} ${
+            isDarkMode ? 'text-white' : 'text-slate-800'
+          }`}
         >
           {isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
           {isActive ? 'Tạm dừng' : 'Bắt đầu'}
-        </Button>
+        </button>
         
-        <Button
+        <button
           onClick={resetTimer}
-          variant="outline"
-          className={`${
-            isDarkMode 
-              ? 'border-slate-600 text-slate-300 hover:bg-slate-700' 
-              : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+          className={`flex items-center gap-2 px-4 py-3 rounded-full transition-all duration-300 ${neumorphicButton} ${
+            isDarkMode ? 'text-slate-300' : 'text-slate-600'
           }`}
         >
           <RotateCcw className="h-4 w-4" />
-          Reset
-        </Button>
+        </button>
       </div>
 
       {/* Tips */}
