@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card';
 import TaskManager from '@/components/TaskManager';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import MusicPlayer from '@/components/MusicPlayer';
+import WorkHistory from '@/components/WorkHistory';
+import MotivationalQuotes from '@/components/MotivationalQuotes';
 import { Focus, Settings } from 'lucide-react';
 
 const Index = () => {
@@ -77,12 +79,20 @@ const Index = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Task Manager */}
-          <div className="lg:col-span-2">
+          {/* Left Column - Tasks and Work History */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Task Manager */}
             <div className={`p-6 rounded-3xl border-0 ${neumorphicCard} ${
               isDarkMode ? 'text-white' : 'text-slate-800'
             }`}>
               <TaskManager isDarkMode={isDarkMode} />
+            </div>
+
+            {/* Work History */}
+            <div className={`p-6 rounded-3xl border-0 ${neumorphicCard} ${
+              isDarkMode ? 'text-white' : 'text-slate-800'
+            }`}>
+              <WorkHistory isDarkMode={isDarkMode} />
             </div>
           </div>
 
@@ -104,6 +114,9 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Motivational Quotes */}
+      <MotivationalQuotes isDarkMode={isDarkMode} />
     </div>
   );
 };

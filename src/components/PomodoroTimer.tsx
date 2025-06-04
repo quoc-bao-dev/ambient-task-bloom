@@ -2,22 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw, Timer } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import PomodoroSettings from './PomodoroSettings';
+import { useWorkHistory } from '@/hooks/useWorkHistory';
 
 interface PomodoroTimerProps {
   isDarkMode: boolean;
 }
 
 const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isDarkMode }) => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [workDuration, setWorkDuration] = useState(25 * 60);
+  const [breakDuration, setBreakDuration] = useState(5 * 60);
+  const [longBreakDuration, setLongBreakDuration] = useState(15 * 60);
+  
+  const [timeLeft, setTimeLeft] = useState(workDuration);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [cycle, setCycle] = useState(1);
+  const [sessionStart, setSessionStart] = useState<number | null>(null);
+  
   const { toast } = useToast();
+  const { addSession } = useWorkHistory();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-
-  const workDuration = 25 * 60; // 25 minutes
-  const breakDuration = 5 * 60; // 5 minutes
-  const longBreakDuration = 15 * 60; // 15 minutes
 
   const neumorphicButton = `${
     isDarkMode 
@@ -54,6 +59,20 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isDarkMode }) => {
   const handleTimerComplete = () => {
     setIsActive(false);
     
+    // Save session to history
+    if (sessionStart) {
+      const currentDuration = isBreak ? 
+        (cycle % 4 === 0 ? longBreakDuration : breakDuration) : 
+        workDuration;
+      
+      addSession({
+        date: new Date().toISOString().split('T')[0],
+        type: isBreak ? 'break' : 'work',
+        duration: currentDuration,
+        completed: true,
+      });
+    }
+
     if (!isBreak) {
       // Work session completed
       if (cycle % 4 === 0) {
@@ -82,16 +101,56 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isDarkMode }) => {
         description: "Hết giờ nghỉ. Bắt đầu chu kỳ làm việc mới!",
       });
     }
+    setSessionStart(null);
   };
 
   const toggleTimer = () => {
+    if (!isActive && !sessionStart) {
+      setSessionStart(Date.now());
+    } else if (!isActive && sessionStart) {
+      // Save incomplete session when stopping
+      const elapsed = (Date.now() - sessionStart) / 1000;
+      addSession({
+        date: new Date().toISOString().split('T')[0],
+        type: isBreak ? 'break' : 'work',
+        duration: Math.floor(elapsed),
+        completed: false,
+      });
+    }
     setIsActive(!isActive);
   };
 
   const resetTimer = () => {
+    if (sessionStart && isActive) {
+      // Save incomplete session when resetting
+      const elapsed = (Date.now() - sessionStart) / 1000;
+      addSession({
+        date: new Date().toISOString().split('T')[0],
+        type: isBreak ? 'break' : 'work',
+        duration: Math.floor(elapsed),
+        completed: false,
+      });
+    }
+    
     setIsActive(false);
     setIsBreak(false);
     setTimeLeft(workDuration);
+    setSessionStart(null);
+  };
+
+  const handleSettingsSave = (settings: {
+    workDuration: number;
+    breakDuration: number;
+    longBreakDuration: number;
+  }) => {
+    setWorkDuration(settings.workDuration);
+    setBreakDuration(settings.breakDuration);
+    setLongBreakDuration(settings.longBreakDuration);
+    
+    // Reset timer with new work duration if not active
+    if (!isActive && !isBreak) {
+      setTimeLeft(settings.workDuration);
+    }
   };
 
   const formatTime = (seconds: number) => {
@@ -106,9 +165,18 @@ const PomodoroTimer: React.FC<PomodoroTimerProps> = ({ isDarkMode }) => {
 
   return (
     <div className="space-y-6 text-center">
-      <div className="flex items-center justify-center gap-2 mb-4">
-        <Timer className={`h-6 w-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-        <h3 className="text-xl font-light">Pomodoro Focus</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Timer className={`h-6 w-6 ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`} />
+          <h3 className="text-xl font-light">Pomodoro Focus</h3>
+        </div>
+        <PomodoroSettings
+          isDarkMode={isDarkMode}
+          workDuration={workDuration}
+          breakDuration={breakDuration}
+          longBreakDuration={longBreakDuration}
+          onSave={handleSettingsSave}
+        />
       </div>
 
       {/* Timer Display */}

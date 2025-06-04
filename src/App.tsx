@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AudioProvider } from "@/contexts/AudioContext";
 import Index from "./pages/Index";
+import WorkHistoryDetail from "./pages/WorkHistoryDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/work-history" element={<WorkHistoryDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
